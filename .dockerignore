@@ -1,0 +1,16 @@
+# Exclude git directory and files
+.git/
+.gitignore
+
+# Exclude Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+
+# Exclude virtual environment
+venv/
+
+# Exclude OS artifacts
+.DS_Store

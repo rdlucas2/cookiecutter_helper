@@ -1,0 +1,24 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+
+# IDE artifacts (e.g., PyCharm, VS Code)
+.idea/
+.vscode/
+
+# Docker artifacts
+*.log
+
+# Generated code
+generated_code/
+
+# OS artifacts
+.DS_Store
+
+secrets.txt
