@@ -1,7 +1,3 @@
-Certainly! Here's a sample `README.md` for the Python script and Docker setup you've described:
-
----
-
 # Repo Generator with Cookiecutter
 
 This application utilizes a `cookiecutter` template to generate boilerplate code for a project, and then creates a new repository on GitHub to push this code.
