@@ -1,5 +1,5 @@
 # Use an official Python runtime as a base image
-FROM alpine:latest as builder
+FROM alpine:latest AS builder
 RUN apk add --no-cache python3 py3-pip git
 
 # Set the maintainer label
