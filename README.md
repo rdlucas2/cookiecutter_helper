@@ -2,6 +2,40 @@
 
 This application utilizes a `cookiecutter` template to generate boilerplate code for a project, and then creates a new repository on GitHub to push this code.
 
+## Quickstart
+
+```bash
+#test
+docker build -t repo-generator-test . --target test
+docker run -it --rm -v $(pwd):/coverage repo-generator-test
+
+#scan
+#start sonarqube
+docker run -d --name sonarqube -p 9000:9000 sonarqube
+
+#monitor startup (optional)
+docker logs -f sonarqube
+
+# navigate to localhost:9000 when complete, using username/password of admin/admin
+# generate an api token
+
+#sonar scan:
+docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_LOGIN="<your-generated-token>" -v $(pwd):/usr/src sonarsource/sonar-scanner-cli
+
+#trivy scan:
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/output aquasec/trivy image --format table --output /output/trivy-report.txt --scanners vuln repo-generator:latest
+
+#run
+docker build -t repo-generator .
+
+TEMPLATE_URL="https://github.com/cookiecutter-flask/cookiecutter-flask"
+GITHUB_TOKEN="YOUR_TOKEN_HERE"
+REPO_URL="https://github.com/rdlucas2/improved-fiesta"
+JSON_FILE_PATH="/app/output/overrides.json"
+
+docker run -it -rm -v $(pwd)/generated_code:/app/output repo-generator --template_url $TEMPLATE_URL --repo_url $REPO_URL --token $GITHUB_TOKEN --json_file $JSON_FILE_PATH --output-dir /app/output
+```
+
 ## Prerequisites
 
 - Docker installed on your machine.
@@ -31,16 +65,15 @@ This application utilizes a `cookiecutter` template to generate boilerplate code
    ```bash
       TEMPLATE_URL="https://github.com/cookiecutter-flask/cookiecutter-flask"
       GITHUB_TOKEN="YOUR_TOKEN_HERE"
-      #REPO_NAME="improved-fiesta"
       REPO_URL="https://github.com/rdlucas2/improved-fiesta"
       JSON_FILE_PATH="/app/output/overrides.json"
 
-      docker run -it -rm -v $(pwd)/generated_code:/app/output repo-generator $TEMPLATE_URL $REPO_URL $GITHUB_TOKEN $JSON_FILE_PATH --output-dir /app/output
+      docker run -it --rm -v $(pwd)/generated_code:/app/output repo-generator --template_url $TEMPLATE_URL --repo_url $REPO_URL --token $GITHUB_TOKEN --json_file $JSON_FILE_PATH --output-dir /app/output
 
       #debug:
       docker run -it --rm -v $(pwd)/generated_code:/app/output --entrypoint /bin/bash repo-generator
 
-      #run tests (TODO: this calls pytest, but we need additional args or better default CMD):
+      #run tests
       docker run -it --rm -v $(pwd):/coverage repo-generator-test
    ```
    ```powershell
@@ -97,16 +130,14 @@ This guide will walk you through setting up SonarQube locally using Docker to sc
 Pull the latest SonarQube image from Docker Hub:
 
 ```bash
-docker pull sonarqube
-
 #start sonarqube
 docker run -d --name sonarqube -p 9000:9000 sonarqube
 
 #monitor startup
 docker logs -f sonarqube
 
-#navigate to localhost:9000 when complete, using username/password of admin/admin
-
+# navigate to localhost:9000 when complete, using username/password of admin/admin
+# generate an api token
 ```
 
 ### 2. Running Analysis
