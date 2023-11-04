@@ -1,5 +1,5 @@
 # Use an official Python runtime as a base image
-FROM python:3.9-slim
+FROM python:3.9-slim AS base
 
 # Set the maintainer label
 #LABEL maintainer="your_email@example.com"
@@ -16,6 +16,34 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 # Copy the current directory contents into the container at /app
 COPY repo_generator.py /app/
+
+FROM base AS test
+COPY requirements-dev.txt requirements-dev.txt
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY test_repo_generator.py test_repo_generator.py
+
+ENTRYPOINT [ "pytest" ]
+
+CMD ["--help"]
+
+
+FROM base AS artifact
+# Add a non-root user and group
+RUN addgroup --system nonroot && \
+    adduser --system --ingroup nonroot nonroot
+
+# Set the home directory for the nonroot user
+ENV HOME=/home/nonroot
+
+# Create the home directory and set proper permissions
+RUN mkdir -p $HOME && \
+    chown -R nonroot:nonroot $HOME
+
+# Change the ownership of the /app directory to the nonroot user
+RUN chown -R nonroot:nonroot /app
+
+# Switch to the nonroot user
+USER nonroot
 
 ENTRYPOINT ["python", "/app/repo_generator.py"]
 

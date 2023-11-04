@@ -14,3 +14,5 @@ venv/
 
 # Exclude OS artifacts
 .DS_Store
+
+.scannerwork

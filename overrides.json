@@ -1,4 +1,12 @@
 {
-    "variable_name1": "value1",
-    "variable_name2": "value2"
-}
+    "full_name": "author name",
+    "email": "author@name.com",
+    "github_username": "rdlucas2",
+    "project_name": "myflask",
+    "app_name": "myflask",
+    "project_short_description": "generated from cookiecutter template",
+    "use_pipenv": "",
+    "python_version": "",
+    "node_version": "",
+    "use_heroku": ""
+  }

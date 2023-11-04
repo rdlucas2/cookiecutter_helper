@@ -12,14 +12,18 @@ This application utilizes a `cookiecutter` template to generate boilerplate code
 1. **Clone this Repository**:
    
    ```bash
-   git clone [your-repo-url]
-   cd [your-repo-name]
+   git clone https://github.com/rdlucas2/cookiecutter_helper.git
+   cd cookiecutter_helper
    ```
 
 2. **Build the Docker Image**:
 
    ```bash
+   #build artifact
    docker build -t repo-generator .
+
+   #build tests
+   docker build -t repo-generator-test . --target test
    ```
 
 3. **Run the Application with Docker**:
@@ -31,27 +35,30 @@ This application utilizes a `cookiecutter` template to generate boilerplate code
       REPO_URL="https://github.com/rdlucas2/improved-fiesta"
       JSON_FILE_PATH="/app/output/overrides.json"
 
-      #docker run -it -rm -v $(pwd)/generated_code:/app/output repo-generator TEMPLATE_URL REPO_URL GITHUB_TOKEN JSON_FILE_PATH --output-dir /app/output
-      docker run -it --rm -v "$(pwd)/generated_code:/app/output" repo-generator --template_url TEMPLATE_URL --repo_url REPO_URL --token GITHUB_TOKEN --json_file JSON_FILE_PATH --output-dir /app/output
+      docker run -it -rm -v $(pwd)/generated_code:/app/output repo-generator $TEMPLATE_URL $REPO_URL $GITHUB_TOKEN $JSON_FILE_PATH --output-dir /app/output
 
       #debug:
       docker run -it --rm -v $(pwd)/generated_code:/app/output --entrypoint /bin/bash repo-generator
+
+      #run tests:
+      docker run -it --rm repo-generator-test .
    ```
    ```powershell
       $TEMPLATE_URL="https://github.com/cookiecutter-flask/cookiecutter-flask"
       $GITHUB_TOKEN="YOUR_TOKEN_HERE"
-      #$REPO_NAME="improved-fiesta"
       $REPO_URL="https://github.com/rdlucas2/improved-fiesta"
       $JSON_FILE_PATH="/app/output/overrides.json"
 
-      #docker run -it --rm -v "$(pwd)/generated_code:/app/output" repo-generator $TEMPLATE_URL $REPO_URL $GITHUB_TOKEN $JSON_FILE_PATH --output-dir /app/output
       docker run -it --rm -v "$(pwd)/generated_code:/app/output" repo-generator --template_url $TEMPLATE_URL --repo_url $REPO_URL --token $GITHUB_TOKEN --json_file $JSON_FILE_PATH --output-dir /app/output
 
       #debug:
       docker run -it --rm -v "$(pwd)/generated_code:/app/output" --entrypoint /bin/bash repo-generator
+
+      #run tests:
+      docker run -it --rm repo-generator-test .
    ```
 
-Replace placeholders like `TEMPLATE_URL`, `REPO_NAME`, etc., with the appropriate values when running the container.
+Replace placeholders like `TEMPLATE_URL`, `REPO_URL`, etc., with the appropriate values when running the container.
 
 Note: If specifying an output directory within the container, the generated code will reside inside the Docker container's file system. If you want to access it from your host machine, consider mounting a volume or copying files out of the container.
 
@@ -74,6 +81,47 @@ Note: If specifying an output directory within the container, the generated code
 
 - **OUTPUT_DIR** (optional): Directory within the container where the boilerplate should be generated. Defaults to the current directory.
 
+# Local SonarQube Setup with Docker
+
+This guide will walk you through setting up SonarQube locally using Docker to scan your code for vulnerabilities.
+
+## Prerequisites
+
+- Docker installed on your local machine.
+- Local codebase that you want to analyze.
+
+## Getting Started
+
+### 1. Pull SonarQube Docker Image
+
+Pull the latest SonarQube image from Docker Hub:
+
+```bash
+docker pull sonarqube
+
+#start sonarqube
+docker run -d --name sonarqube -p 9000:9000 sonarqube
+
+#monitor startup
+docker logs -f sonarqube
+
+#navigate to localhost:9000 when complete, using username/password of admin/admin
+
+```
+
+### 2. Running Analysis
+
+```bash
+docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_LOGIN="<your-generated-token>" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli
+```
+
+Remember to replace <your-generated-token> with the token you generate in SonarQube for authentication. This can be done in the SonarQube dashboard under your user account settings in the security section.
+
+### 3. CVE SCAN
+
+```bash
+docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image repo-generator:latest
+```
 
 ## License
 
@@ -81,4 +129,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-Replace `[your-repo-url]` and `[your-repo-name]` with appropriate values for your repository. If you have a LICENSE file in your repo, the last line will directly point to it, otherwise you can remove or replace that line as needed.
+### TODO:
+- get test coverage going to sonarqube
+- get a nicer trivy report
