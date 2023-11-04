@@ -33,7 +33,7 @@ GITHUB_TOKEN="YOUR_TOKEN_HERE"
 REPO_URL="https://github.com/rdlucas2/improved-fiesta"
 JSON_FILE_PATH="/app/output/overrides.json"
 
-docker run -it -rm -v $(pwd)/generated_code:/app/output repo-generator --template_url $TEMPLATE_URL --repo_url $REPO_URL --token $GITHUB_TOKEN --json_file $JSON_FILE_PATH --output-dir /app/output
+docker run -it --rm -v $(pwd)/generated_code:/app/output repo-generator --template_url $TEMPLATE_URL --repo_url $REPO_URL --token $GITHUB_TOKEN --json_file $JSON_FILE_PATH --output-dir /app/output
 ```
 
 ## Prerequisites
