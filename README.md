@@ -40,8 +40,8 @@ This application utilizes a `cookiecutter` template to generate boilerplate code
       #debug:
       docker run -it --rm -v $(pwd)/generated_code:/app/output --entrypoint /bin/bash repo-generator
 
-      #run tests:
-      docker run -it --rm repo-generator-test .
+      #run tests (TODO: this calls pytest, but we need additional args or better default CMD):
+      docker run -it --rm -v $(pwd):/coverage repo-generator-test
    ```
    ```powershell
       $TEMPLATE_URL="https://github.com/cookiecutter-flask/cookiecutter-flask"
@@ -54,8 +54,8 @@ This application utilizes a `cookiecutter` template to generate boilerplate code
       #debug:
       docker run -it --rm -v "$(pwd)/generated_code:/app/output" --entrypoint /bin/bash repo-generator
 
-      #run tests:
-      docker run -it --rm repo-generator-test .
+      #run tests (TODO: this calls pytest, but we need additional args or better default CMD):
+      docker run -it --rm -v "$(pwd):/coverage" repo-generator-test
    ```
 
 Replace placeholders like `TEMPLATE_URL`, `REPO_URL`, etc., with the appropriate values when running the container.

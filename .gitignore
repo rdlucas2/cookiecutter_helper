@@ -22,4 +22,6 @@ generated_code/
 .DS_Store
 
 secrets.txt
+
 .scannerwork
+coverage.xml

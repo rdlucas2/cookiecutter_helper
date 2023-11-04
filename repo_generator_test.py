@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from repo_generator import get_configuration, clone_template_repo_and_generate_code, clone_and_push_to_github, main, Configuration
 
-class TestRepoGenerator(unittest.TestCase):
+class RepoGeneratorTest(unittest.TestCase):
     local_configuration: Configuration = Configuration(
         project_name='fake_project', 
         token='fake-token', 

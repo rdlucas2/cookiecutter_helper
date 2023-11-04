@@ -13,7 +13,6 @@ def get_configuration(args):
         overrides = json.load(file)
     project_name: str = overrides.get("project_name")
     local_path = f'{args.output_dir}/{project_name}'
-    #repo_url, local_path, token, commit_message="Add boilerplate"
     return Configuration(
         project_name=project_name, 
         token=args.token, 

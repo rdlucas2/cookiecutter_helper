@@ -20,11 +20,11 @@ COPY repo_generator.py /app/
 FROM base AS test
 COPY requirements-dev.txt requirements-dev.txt
 RUN pip install --no-cache-dir -r requirements-dev.txt
-COPY test_repo_generator.py test_repo_generator.py
+COPY repo_generator_test.py repo_generator_test.py
 
 ENTRYPOINT [ "pytest" ]
 
-CMD ["--help"]
+CMD [ "--cov=repo_generator", "--cov-report=xml:/coverage/coverage.xml" ]
 
 
 FROM base AS artifact
