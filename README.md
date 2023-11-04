@@ -119,16 +119,18 @@ Remember to replace <your-generated-token> with the token you generate in SonarQ
 
 ### 3. CVE SCAN
 
+Remove ```--scanners vuln``` to enable secret scanning, but it will take longer.
+
+```powershell
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd):/output" aquasec/trivy image --format table --output /output/trivy-report.txt --scanners vuln repo-generator:latest
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd):/output" aquasec/trivy image --format json --output /output/trivy-report.json --scanners vuln repo-generator:latest
+```
+
 ```bash
-docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image repo-generator:latest
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/output aquasec/trivy image --format table --output /output/trivy-report.txt --scanners vuln repo-generator:latest
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/output aquasec/trivy image --format json --output /output/trivy-report.json --scanners vuln repo-generator:latest
 ```
 
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
-
----
-
-### TODO:
-- get test coverage going to sonarqube
-- get a nicer trivy report

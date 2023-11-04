@@ -25,3 +25,5 @@ secrets.txt
 
 .scannerwork
 coverage.xml
+trivy-report.txt
+trivy-report.json
