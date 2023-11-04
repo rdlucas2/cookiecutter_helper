@@ -134,3 +134,8 @@ docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/output aquase
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+### Other Notes:
+- when changing file/directory permissions, sometimes need to delete anything generated from the scripts
