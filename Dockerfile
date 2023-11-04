@@ -8,7 +8,8 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Install required packages
-RUN pip install --no-cache-dir cookiecutter PyGithub argparse
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Git
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
@@ -16,5 +17,6 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 # Copy the current directory contents into the container at /app
 COPY repo_generator.py /app/
 
-# Define the default command to run the script
-CMD ["python", "/app/repo_generator.py"]
+ENTRYPOINT ["python", "/app/repo_generator.py"]
+
+CMD ["--help"]

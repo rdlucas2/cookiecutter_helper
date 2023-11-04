@@ -3,18 +3,36 @@ import subprocess
 import argparse
 import json
 import tempfile
-from urllib.parse import urlparse
 import glob
+from collections import namedtuple
+
+Configuration = namedtuple('Configuration', 'project_name token overrides local_path template_url extra_args')
+
+def get_configuration(args):
+    with open(args.json_file, 'r') as file:
+        overrides = json.load(file)
+    project_name: str = overrides.get("project_name")
+    local_path = f'{args.output_dir}/{project_name}'
+    return Configuration(
+        project_name=project_name, 
+        token=args.token, 
+        overrides=overrides, 
+        local_path=local_path, 
+        template_url=args.template_url, 
+        extra_args=[f"{key}={value}" for key, value in overrides.items()]
+    )
+
+def clone_template_repo_and_generate_code(extra_args):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        subprocess.run(["git", "clone", args.template_url, tmpdirname])
+        command = ["cookiecutter", "-f", "--no-input", tmpdirname, "--output-dir", args.output_dir, *extra_args]
+        print(f"{''.join(command)}")
+        subprocess.run(command)
 
 def clone_and_push_to_github(repo_url, local_path, token, commit_message="Add boilerplate"):
     """
     Clone an existing repository and push local code to it.
     """
-
-    parsed_url = urlparse(repo_url)
-    repo_name = parsed_url.path.split('/')[-1]
-    #tmpdirname = f"/tmp/{repo_name}"
-    #print(tmpdirname)
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         # Git commands to clone the existing repository
@@ -34,30 +52,11 @@ def clone_and_push_to_github(repo_url, local_path, token, commit_message="Add bo
         repo_url_with_pat = repo_url.replace("https://", f"https://{token}@")
         subprocess.run(['git', 'push', repo_url_with_pat])
 
-
 def main(args):
-    project_name = ''
-    # Create a temporary directory
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        # Step 0: Clone the cookiecutter template to the temporary directory
-        subprocess.run(["git", "clone", args.template_url, tmpdirname])
-        
-        # Load the JSON data for overrides
-        with open(args.json_file, 'r') as file:
-            overrides = json.load(file)
-        # Convert the JSON data into a string format suitable for `cookiecutter`
-        extra_args = [f"{key}={value}" for key, value in overrides.items()]
-        project_name = overrides.get("project_name")
-        token = args.token
-        # Step 1: Generate boilerplate code using the cloned template
-        thing = ["cookiecutter", "-f", "--no-input", tmpdirname, "--output-dir", args.output_dir, *extra_args]
-        print(f"{''.join(thing)}")
-        subprocess.run(["cookiecutter", "-f", "--no-input", tmpdirname, "--output-dir", args.output_dir, *extra_args])
-
-    # Step 2: Create new GitHub repository and push code
-    local_path = f'{args.output_dir}/{project_name}'
-    print(local_path)
-    clone_and_push_to_github(args.repo_url, local_path, token)
+    configuration: Configuration = get_configuration(args)
+    clone_template_repo_and_generate_code(configuration.extra_args)
+    print(configuration.local_path)
+    clone_and_push_to_github(args.repo_url, configuration.local_path, configuration.token)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Clone a cookiecutter template, generate a project from it, and push to GitHub.")
