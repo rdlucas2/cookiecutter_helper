@@ -20,7 +20,7 @@ docker logs -f sonarqube
 # generate an api token
 
 #sonar scan:
-docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_LOGIN="<your-generated-token>" -v $(pwd):/usr/src sonarsource/sonar-scanner-cli
+docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_TOKEN="<your-generated-token>" -v $(pwd):/usr/src sonarsource/sonar-scanner-cli
 
 #trivy scan:
 docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/output aquasec/trivy image --format table --output /output/trivy-report.txt --scanners vuln repo-generator:latest
@@ -143,7 +143,7 @@ docker logs -f sonarqube
 ### 2. Running Analysis
 
 ```bash
-docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_LOGIN="<your-generated-token>" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli
+docker run -it --rm -e SONAR_HOST_URL="http://host.docker.internal:9000" -e SONAR_TOKEN="<your-generated-token>" -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli
 ```
 
 Remember to replace <your-generated-token> with the token you generate in SonarQube for authentication. This can be done in the SonarQube dashboard under your user account settings in the security section.
