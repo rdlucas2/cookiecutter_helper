@@ -1,5 +1,5 @@
 # Use an official Python runtime as a base image
-FROM alpine:latest AS builder
+FROM alpine:3.21 AS builder
 RUN apk update && apk add --upgrade apk-tools && apk upgrade --available && apk add --no-cache python3 py3-pip git
 
 # Set the maintainer label
@@ -7,6 +7,13 @@ RUN apk update && apk add --upgrade apk-tools && apk upgrade --available && apk 
 
 # Set the working directory inside the container
 WORKDIR /app
+
+# Create and activate virtual environment
+RUN python3 -m venv /app/venv
+ENV PATH="/app/venv/bin:$PATH"
+
+# Upgrade pip to fix CVE-2025-8869 and CVE-2026-1703
+RUN pip install --no-cache-dir --upgrade pip
 
 # Install required packages
 COPY requirements.txt requirements.txt
@@ -20,7 +27,7 @@ COPY requirements-dev.txt requirements-dev.txt
 RUN pip install --no-cache-dir -r requirements-dev.txt
 COPY repo_generator_test.py repo_generator_test.py
 
-ENTRYPOINT [ "pytest" ]
+ENTRYPOINT [ "/app/venv/bin/pytest" ]
 
 CMD [ "--cov=repo_generator", "--cov-report=xml:/coverage/coverage.xml" ]
 
@@ -42,6 +49,6 @@ RUN mkdir -p $HOME && \
 # Switch to the nonroot user
 USER nonroot
 
-ENTRYPOINT ["python", "/app/repo_generator.py"]
+ENTRYPOINT ["/app/venv/bin/python", "/app/repo_generator.py"]
 
 CMD ["--help"]
